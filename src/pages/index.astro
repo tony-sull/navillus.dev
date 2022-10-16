@@ -1,15 +1,39 @@
 ---
+import { Markdown } from 'astro-remote'
+import readingTime from 'reading-time'
+import Layout from '../layouts/Base.astro'
+import { formatDate } from '../utils/dates.js'
+
+const testing = await fetch('https://api.navillus.dev/BlogPosting/web-components-in-astro.jsonld')
+const { articleBody, ...frontmatter } = await testing.json()
+
+const minutes = Math.round(readingTime(articleBody).minutes)
 ---
 
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <meta name="viewport" content="width=device-width" />
-        <meta name="generator" content={Astro.generator} />
-        <title>Astro</title>
-    </head>
-    <body>
-        <h1>Astro</h1>
-    </body>
-</html>
+<Layout>
+    <header>
+        <h1 class="p-name" style="font-size: var(--text-3xl);">{frontmatter.name}</h1>
+  
+        <p class="p-summary h5 lead">{frontmatter.description}</p>
+  
+        <small>
+          <time class="dt-published" datetime={frontmatter.datePublished}>
+            {formatDate(frontmatter.datePublished)}
+          </time>
+          by
+          <b class="h-card p-author">
+            <a class="u-url" href={frontmatter.author.url}>{frontmatter.author.name}</a>
+          </b>
+          • {minutes} min read
+        </small>
+  
+        {frontmatter.dateModified && (
+          <small>
+            <time class="dt-updated" datetime={frontmatter.dateModified}>
+              <i>Updated: {formatDate(frontmatter.dateModified)}</i>
+            </time>
+          </small>
+        )}
+      </header>
+    <Markdown content={articleBody} />
+</Layout>
