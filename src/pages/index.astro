@@ -1,39 +1,50 @@
 ---
-import { Markdown } from 'astro-remote'
-import readingTime from 'reading-time'
+import Hero from '../components/Hero.astro'
 import Layout from '../layouts/Base.astro'
 import { formatDate } from '../utils/dates.js'
 
-const testing = await fetch('https://api.navillus.dev/BlogPosting/web-components-in-astro.jsonld')
-const { articleBody, ...frontmatter } = await testing.json()
+function toSlug(post: { url: string }) {
+    const url = new URL(post.url)
+    return url.toString().replace('https://api.navillus.dev/BlogPosting/', '')
+}
 
-const minutes = Math.round(readingTime(articleBody).minutes)
+function comparator(a: any, b: any) {
+    return (
+        new Date(b.datePublished).getTime() -
+        new Date(a.datePublished).getTime()
+    )
+}
+
+const posts = await fetch('https://api.navillus.dev/BlogPosting.jsonld').then(
+    (res) => res.json()
+)
 ---
 
 <Layout>
-    <header>
-        <h1 class="p-name" style="font-size: var(--text-3xl);">{frontmatter.name}</h1>
-  
-        <p class="p-summary h5 lead">{frontmatter.description}</p>
-  
-        <small>
-          <time class="dt-published" datetime={frontmatter.datePublished}>
-            {formatDate(frontmatter.datePublished)}
-          </time>
-          by
-          <b class="h-card p-author">
-            <a class="u-url" href={frontmatter.author.url}>{frontmatter.author.name}</a>
-          </b>
-          • {minutes} min read
-        </small>
-  
-        {frontmatter.dateModified && (
-          <small>
-            <time class="dt-updated" datetime={frontmatter.dateModified}>
-              <i>Updated: {formatDate(frontmatter.dateModified)}</i>
-            </time>
-          </small>
-        )}
-      </header>
-    <Markdown content={articleBody} />
+    <Hero
+        title="The Navillus Blog"
+        subtitle="JAMSTACK DEVELOPERS FOR HIRE"
+        content="Exploring the Jamstack and the future of web development."
+    />
+    <ul>
+        {
+            posts['@graph'].sort(comparator).map((post: any) => (
+                <li>
+                    <a href={`/blog/${toSlug(post)}`}>{post.name}</a>
+                    <br />
+                    <small style="margin-left: var(--gap-base);">
+                        by {post.author.name} • {formatDate(post.datePublished)}
+                    </small>
+                </li>
+            ))
+        }
+    </ul>
 </Layout>
+
+<style>
+    ul {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-lg);
+    }
+</style>

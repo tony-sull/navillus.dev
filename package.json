@@ -11,7 +11,7 @@
         "astro": "astro",
         "format": "run-s format:*",
         "format:prettier": "prettier -w --plugin-search-dir=. .",
-        "format:eslint": "eslint --fix \"**/*.{js,ts,astro}\""
+        "format:eslint": "eslint --fix \"**/*.{js,astro}\""
     },
     "dependencies": {
         "astro": "^1.5.0"

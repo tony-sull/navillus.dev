@@ -1,0 +1,43 @@
+---
+import { Markdown } from 'astro-remote'
+import Show from './Show.astro'
+
+export interface Props {
+    title?: string
+    subtitle?: string
+    content?: string
+    cta?: {
+        href: string
+        text: string
+    }
+}
+
+const { title, subtitle, content, cta } = Astro.props
+---
+
+<section>
+    <div class="container hero">
+        <Show when={title}>
+            <h1 class="h6">{title}</h1>
+        </Show>
+        <Show when={subtitle}>
+            <h2 class="h1">{subtitle}</h2>
+        </Show>
+        <Show when={content}>
+            <p>{content}</p>
+        </Show>
+        <Show when={cta}>
+            <a class="button" href={cta?.href}>{cta?.text}</a>
+        </Show>
+    </div>
+</section>
+
+<style>
+    h2 :global(p) {
+        margin-bottom: 0;
+    }
+
+    .button {
+        margin-top: var(--spacer-md);
+    }
+</style>

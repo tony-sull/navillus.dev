@@ -1,0 +1,76 @@
+---
+import { Markdown } from 'astro-remote'
+import readingTime from 'reading-time'
+import Layout from '../../layouts/Base.astro'
+import { formatDate } from '../../utils/dates.js'
+
+export async function getStaticPaths() {
+    const res = await fetch('https://api.navillus.dev/BlogPosting.jsonld')
+
+    const allPosts = await res.json()
+
+    function toSlug(post: { url: string }) {
+        const url = new URL(post.url)
+        return url
+            .toString()
+            .replace('https://api.navillus.dev/BlogPosting/', '')
+    }
+
+    return allPosts['@graph'].map((post: any) => ({
+        params: { slug: toSlug(post) }
+    }))
+}
+
+const { slug } = Astro.params
+
+const testing = await fetch(
+    `https://api.navillus.dev/BlogPosting/${slug}.jsonld`
+)
+const { articleBody, ...frontmatter } = await testing.json()
+
+const minutes = Math.round(readingTime(articleBody).minutes)
+---
+
+<Layout>
+    <header>
+        <h1 class="p-name" style="font-size: var(--text-3xl);">
+            {frontmatter.name}
+        </h1>
+
+        <p class="p-summary h5 lead">{frontmatter.description}</p>
+
+        <small>
+            <time class="dt-published" datetime={frontmatter.datePublished}>
+                {formatDate(frontmatter.datePublished)}
+            </time>
+            by
+            <b class="h-card p-author">
+                <a class="u-url" href={frontmatter.author.url}
+                    >{frontmatter.author.name}</a
+                >
+            </b>
+            • {minutes} min read
+        </small>
+
+        {
+            frontmatter.dateModified && (
+                <small>
+                    <time
+                        class="dt-updated"
+                        datetime={frontmatter.dateModified}
+                    >
+                        <i>Updated: {formatDate(frontmatter.dateModified)}</i>
+                    </time>
+                </small>
+            )
+        }
+    </header>
+    <hr />
+    <Markdown content={articleBody} />
+</Layout>
+
+<style>
+    header {
+        padding-top: var(--gap-xl);
+    }
+</style>

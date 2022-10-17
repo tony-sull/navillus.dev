@@ -5,10 +5,10 @@ import '@fontsource/poppins/700.css'
 import site from '../data/site.js'
 
 export interface Props {
-  title?: string
-  description?: string
-  image?: string
-  canonicalURL?: string
+    title?: string
+    description?: string
+    image?: string
+    canonicalURL?: string
 }
 
 const {
@@ -18,12 +18,7 @@ const {
     canonicalURL = new URL(Astro.url.pathname, Astro.site)
 } = Astro.props
 
-const {
-  author,
-  twitter_card,
-  twitter_handle,
-  title: siteTitle,
-} = site
+const { author, twitter_card, twitter_handle, title: siteTitle } = site
 
 const title = [propTitle, siteTitle].filter(Boolean).join(' • ')
 const imageAbsolute = new URL(image, import.meta.env.SITE)
@@ -35,17 +30,17 @@ const imageAbsolute = new URL(image, import.meta.env.SITE)
 <title>{title}</title>
 <meta name="description" content={description} />
 <meta
-  name="keywords"
-  content="web development, consulting, jamstack, serverless, static site, netlify, svelte, software, engineering, software engineering, api development"
+    name="keywords"
+    content="web development, consulting, jamstack, serverless, static site, netlify, svelte, software, engineering, software engineering, api development"
 />
 <meta name="robots" content="index,follow" />
 <meta name="author" content={author} />
 <link rel="canonical" href={canonicalURL} />
 <link
-  rel="alternate"
-  type="application/rss+xml"
-  title="Blog | Navillus"
-  href={new URL('/blog/feed.xml', import.meta.env.SITE)}
+    rel="alternate"
+    type="application/rss+xml"
+    title="Blog | Navillus"
+    href={new URL('/blog/feed.xml', import.meta.env.SITE)}
 />
 
 <!-- Favicons -->
@@ -57,7 +52,9 @@ const imageAbsolute = new URL(image, import.meta.env.SITE)
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="application-name" content={siteTitle} />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
 />
 <meta name="apple-mobile-web-app-title" content={siteTitle} />
 
